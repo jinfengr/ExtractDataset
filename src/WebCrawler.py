@@ -10,12 +10,14 @@ import csv
 from bs4 import BeautifulSoup
 
 def downByMonth(domain, year, month):
+    print year+month
     base_url = "http://arxiv.org"
     seed_url = base_url + "/list/"+domain+"/"+year+month
     soup = BeautifulSoup(urllib2.urlopen(seed_url).read())
     all_tag = soup.find("a", text="all")
-    all_url = base_url + all_tag['href']
-    soup = BeautifulSoup(urllib2.urlopen(all_url).read())
+    if all_tag != None:
+        all_url = base_url + all_tag['href']
+        soup = BeautifulSoup(urllib2.urlopen(all_url).read())
     docs = soup.find_all("a",title="Download PDF")
     for doc in docs:
         pdf_url = doc['href']
