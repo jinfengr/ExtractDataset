@@ -43,15 +43,18 @@ def refineText(infp, outfp):
     outfp.write(''.join(stringlit)+'\n')
     
 
-paper_dir = 'E:/Workspace/Python/CMSC724/data/'
+paper_dir = '../data/'
 
 files = os.listdir(paper_dir)
 for f in files:
-    if f.endswith('.pdf'):
+    if f.endswith('.pdf') and not f.replace('.pdf','.txt') in files:
         infp = open(paper_dir+f,'rb')
         outfp = file(paper_dir+f.replace('.pdf','.txt'), 'w')
         print 'Converting ' + f + '...'
-        extractText(infp, outfp)
+        try:
+            extractText(infp, outfp)
+        except (ValueError, TypeError):
+            print "Error! " + f
         outfp.close()
         infp.close()
 
