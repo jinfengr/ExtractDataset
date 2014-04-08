@@ -43,7 +43,7 @@ def refineText(infp, outfp):
     outfp.write(''.join(stringlit)+'\n')
     
 
-paper_dir = 'E:/Workspace/Python/CMSC724/data/'
+paper_dir = '../data/'
 
 files = os.listdir(paper_dir)
 for f in files:
