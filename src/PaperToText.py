@@ -29,29 +29,32 @@ def extractText(infp, outfp):
         interpreter.process_page(page)
         
 def refineText(infp, outfp):
-    stringlit = []
+    stringlist = []
     for line in infp:
         current = line.strip().replace('  ',' ')
         if current == '':
-            outfp.write(''.join(stringlit)+'\n')
-            stringlit = []
+            outfp.write(''.join(stringlist)+'\n')
+            stringlist = []
             outfp.write('\n')
         elif current[-1] == '-':
-            stringlit.append(current[0:-1])
+            stringlist.append(current[0:-1])
         else:
-            stringlit.append(current+' ')
-    outfp.write(''.join(stringlit)+'\n')
+            stringlist.append(current+' ')
+    outfp.write(''.join(stringlist)+'\n')
     
 
 paper_dir = '../data/'
 
 files = os.listdir(paper_dir)
 for f in files:
-    if f.endswith('.pdf'):
+    if f.endswith('.pdf') and not f.replace('.pdf','.txt') in files:
         infp = open(paper_dir+f,'rb')
         outfp = file(paper_dir+f.replace('.pdf','.txt'), 'w')
         print 'Converting ' + f + '...'
-        extractText(infp, outfp)
+        try:
+            extractText(infp, outfp)
+        except (ValueError, TypeError):
+            print "Error! " + f
         outfp.close()
         infp.close()
 
