@@ -29,18 +29,18 @@ def extractText(infp, outfp):
         interpreter.process_page(page)
         
 def refineText(infp, outfp):
-    stringlit = []
+    stringlist = []
     for line in infp:
         current = line.strip().replace('  ',' ')
         if current == '':
-            outfp.write(''.join(stringlit)+'\n')
-            stringlit = []
+            outfp.write(''.join(stringlist)+'\n')
+            stringlist = []
             outfp.write('\n')
         elif current[-1] == '-':
-            stringlit.append(current[0:-1])
+            stringlist.append(current[0:-1])
         else:
-            stringlit.append(current+' ')
-    outfp.write(''.join(stringlit)+'\n')
+            stringlist.append(current+' ')
+    outfp.write(''.join(stringlist)+'\n')
     
 
 paper_dir = '../data/'
