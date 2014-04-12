@@ -43,7 +43,7 @@ def refineText(infp, outfp):
     outfp.write(''.join(stringlist)+'\n')
     
 
-paper_dir = '../data/'
+paper_dir = '../data/training_data/'
 
 files = os.listdir(paper_dir)
 for f in files:

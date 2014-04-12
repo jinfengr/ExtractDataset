@@ -1,0 +1,596 @@
+4
+1
+0
+2
+
+ 
+r
+a
+
+ 
+
+M
+8
+1
+
+ 
+ 
+]
+T
+S
+h
+t
+a
+m
+
+.
+
+[
+ 
+ 
+
+2
+v
+8
+5
+7
+3
+
+.
+
+3
+0
+4
+1
+:
+v
+i
+X
+r
+a
+
+Big Data – Retour vers le Futur - 3 -
+
+De Statisticien à Data Scientist
+
+Philippe Besse∗
+
+Aurélien Garivier†
+19 mars 2014
+
+Jean-Michel Loubes‡
+
+Résumé : L’évolution rapide des systèmes d’information gérant des
+données de plus en plus volumineuses a causé de profonds change-
+ments de paradigme dans le travail de statisticien, devenant successi-
+vement prospecteur de données, bio-informaticien et maintenant data
+scientist. Sans souci d’exhaustivité et après avoir illustré ces muta-
+tions successives, cet article présente brièvement les nouvelles ques-
+tions de recherche qui émergent rapidement en Statistique, et plus
+généralement en Mathématiques, aﬁn d’intégrer les caractéristiques :
+volume, variété et vitesse, des grandes masses de données.
+Mots-clefs : Statistique ; Fouille de Données ; Données Biologiques
+à Haut Débit ; Grande Dimension ; Bioinformatique ; Apprentissage
+Statistique ; Grandes Masses de Données.
+Abstract : The rapid evolution of information systems managing more
+and more voluminous data has caused profound paradigm shifts in
+the job of statistician, becoming successively data miner, bioinforma-
+tician and now data scientist. Without the sake of completeness and
+after having illustrated these successive mutations, this article brieﬂy
+introduced the new research issues that quickly rise in Statistics, and
+more generally in Mathematics, in order to integrate the characteris-
+tics : volume, variety and velocity, of big data.
+Keywords : Data mining ; biological high throughput data ; high di-
+mension ; bioinformatics ; statistical learning ; big data.
+
+∗Université de Toulouse – INSA, Institut de Mathématiques, UMR CNRS 5219
+†Université de Toulouse – UT3, Institut de Mathématiques, UMR CNRS 5219
+‡Université de Toulouse – UT3, Institut de Mathématiques, UMR CNRS 5219
+
+1
+
+1
+
+Introduction du kO au PO
+
+Il était une fois la Statistique : une question (i.e. biologique), associée à une
+hypothèse expérimentalement réfutable, une expérience planiﬁée où p (au plus
+quatre) variable et facteurs sont observées sur n (environ trente) individus, un mo-
+dèle linéaire supposé vrai, un test, une décision, une réponse. Ce cadre rassurant
+de la Statistique du milieu du siècle dernier a subi de profonds changements de
+paradigme, conséquences des principaux sauts technologiques ; en schématisant,
+à chaque fois que le volume des données à analyser est multiplié par un facteur
+mille.
+
+Sans viser l’exhaustivité, cet article s’attache à analyser ou plutôt illustrer les
+changements de paradigmes qui accompagnent les formes successives que prend
+le métier de statisticien, au gré des développements brutaux des outils informa-
+tiques et, notamment, de ceux des systèmes d’information. Comment le statisti-
+cien est-il passé du traitement de quelques kilo-octets à celui de méga, giga, téra et
+maintenant péta-octets ? Quels sont les principaux changements méthodologiques
+qui ont accompagné ces mutations, et quelles en sont leurs conséquences sur les
+thèmes de recherche ?
+
+Trois exemples sont développés dans une première section pour illustrer ce
+
+propos :
+
+– fouille de donnée (data mining) appliquée à la gestion de la relation client
+
+(GRC) de la ﬁn des années 90 ;
+
+– apprentissage statistique de données omiques la décennie suivante ;
+– avènement récent et très médiatisé du big data.
+
+Nous terminons en pointant de nouvelles pistes de recherche qui s’ouvrent, et
+en précisant les compétences nécessaires à un statisticien pour devenir un data
+scientist.
+
+2 Trois changements de paradigme
+2.1 Exploration et fouille de MO de données
+
+Le premier changement de paradigme est lié à l’origine des données, elles de-
+viennent préalables à l’analyse avec le data mining (Fayyad et al. 1996). L’ex-
+périence n’est plus planiﬁée en relation avec l’objectif, la question posée, les
+données sont issues d’entrepôts, de bases et systèmes relationnels, stockées pour
+d’autres raisons notamment comptables. Dans un grand nombre de cas, les don-
+nées massives ne sont pas utilisées pour produire des connaissances : l’objectif
+est d’apprendre directement des règles de décision ou de diagnostic efﬁcientes.
+Ces cas se multiplient à mesure que les données pouvant être produites et re-
+
+2
+
+cueillies augmentent, rendant souvent illusoire une supervision humaine systéma-
+tique. Moyennant quelques connaissances du langage de requête SQL, le statisti-
+cien, devenu prospecteur, conçoit les méthodes qui classiﬁent ou segmentent des
+bases de clientèle, recherchent des cibles, qu’elles soient à privilégier et solliciter,
+à travers des scores d’appétence ou d’attrition, ou bien à éviter, en estimant des
+risques de défaut de paiement, de faillite.
+
+La fouille de données n’a pas suscité de développements méthodologiques par-
+ticulièrement originaux. Pilotés à l’aide d’une interface graphique plus ou moins
+ergonomique, des assemblages logiciels dédiés, libres ou commerciaux, intègrent
+langage de requête dans les bases de données, exploration statistique et réduction
+de dimension (analyse de données en France ou multivariate analysis), de classiﬁ-
+cation non supervisée ou clustering, de modélisation statistique classique (régres-
+sion gaussienne et logistique, analyse discriminante) et plus algorithmique (arbres
+de décision binaires, réseaux de neurones). Cet ensemble est complété pour ana-
+lyser le « panier de la ménagère » par la recherche de règles d’association.
+
+Le data mining s’est ainsi beaucoup développé à l’initiative des entreprises
+du secteur tertiaire (banque assurance, VPC, téléphonie...) pour des objectifs de
+marketing quantitatif, très peu dans les entreprises industrielles ou la Statistique
+restait une obligation réglementaire (cf. l’industrie pharmaceutique) plus qu’une
+nécessité économique.
+
+2.2 Apprentissage en ultra haute dimension de GO de données
+Le deuxième changement de paradigme est une conséquence directe de l’avè-
+nement de l’imagerie et de celles des biotechnologies. Il a fallu 15 ans et envi-
+ron 2,7 milliards de dollars pour ﬁnir de séquencer un génome humain en 2003.
+La même opération s’exécute en 2014 en quelques heures pour quelques milliers
+d’euros. Le prix n’est plus un goulot d’étranglement, ce sont les capacités d’ana-
+lyse qui le deviennent. Aux 3,2 milliards de paires de nucléotides, s’ajoutent les di-
+zaines voire centaines de milliers d’informations omiques relatives à l’expression
+des gènes (ARN), à celles des protéines (spectrométrie de masse) ou encore des
+métabolites (résonance magnétique nucléaire) présents dans un échantillon bio-
+logique. Ces données sont stockées, annotées, dans des bases dédiées et souvent
+en accès public. Du point de vue du biologiste, les tâches et fonctions d’analyse
+sont confondues mais concernent tant le bioinformaticien qui aligne et compare
+des séquences, les dénombre, reconstitue des génomes, que le biostatisticien qui
+cherche à extraire de ces données des informations signiﬁcatives.
+
+Le biologiste, qui observe ainsi des dizaines de milliers (p) de variables sur
+quelques dizaines (n) d’échantillons, voit croître le volume d’informations, tandis
+que le statisticien ne voit croître que l’indétermination du système où le nombre de
+variables est considérablement plus important que le nombre d’individus. Cette si-
+
+3
+
+tuation extrême a suscité, justiﬁé, beaucoup de développements méthodologiques
+concernant les corrections de tests multiples (FDR de Benjamini et Hochberg ;
+1995), la recherche de modèles parcimonieux ou sparse, l’utilisation d’algorithmes
+d’apprentissage (SVM) de complexité liée à n pas à p (Guyon et al. 2002) ou in-
+sensibles (random forest) au sur-apprentissage (Genuer et al. 2010) couplés à une
+procédure de sélection de variables.
+
+Certes, les masses de données générées et stockées sont considérables mais,
+une fois ﬁltrées, normalisées, pré-traitées, par le bioinformaticien, le biostatisti-
+cien, qui peut être la même personne, n’analyse qu’un tableau de taille globale re-
+lativement classique bien que très largement disproportionné par le nombre de co-
+lonnes ou variables. C’est ainsi que la plupart des méthodes statistiques usuelles,
+de la régression aux modèles graphiques en passant par la PLS (i.e. Lê Cao et
+al. 2008 ; 2011) ont été revisitées par l’adjonction d’un terme de pénalisation dite
+Lasso (Tibshirani, 1996), ou en norme L1, aﬁn de forcer l’annulation de nom-
+breux paramètres et donc arriver à une sélection drastique des variables conjoin-
+tement à l’estimation du modèle. L’objectif est d’obtenir des résultats simplement
+interprétables ou encore, avec un objectif prévisionnel, c’est la recherche de bio-
+marqueurs, protéines, gènes, susceptibles, par exemple, d’afﬁner un diagnostic
+précoce.
+
+Le principal souci du statisticien devenu bioinformaticien est le contrôle du
+sur-ajustement en apprentissage statistique (Hastie et al. 2009) aﬁn d’éviter les ar-
+tefacts de l’échantillon. Ceci se traduit par la recherche d’un compromis classique
+entre biais et variance, entre erreur d’approximation et d’estimation, pour optimi-
+ser la complexité du modèle et ainsi minimiser le risque ou erreur de prévision ou
+de généralisation.
+
+2.3 Science des grandes masses de TO de données
+
+Dans les applications en production industrielle, le e-commerce, la géo-localisation...
+
+c’est le nombre n d’individus et la complexité des données qui explosent. Les
+bases se structurent en nuages (cloud), les moyens de calculs se groupent (clus-
+ter), mais la puissance ne sufﬁt pas à la voracité (greed) des algorithmes. Encou-
+ragé par la loi de Moore, de plus en plus est attendu des méthodes de traitement
+automatique des données, et on constate que le nombre de variables observées
+sur chaque individu croît lui aussi (p grandit avec n). Dans le savant équilibre
+qui conduit aux règles de décision les plus pertinentes, un troisième terme d’er-
+reur vient s’ajouter à l’approximation et à l’estimation : l’erreur d’optimisation,
+induite par la limitation du temps de calcul ou celle du volume / ﬂux de données
+considéré.
+
+En relation avec ces nouvelles structures de données réparties ou fragmentées
+(sharding) en nœuds (Hadoop , NoSQL...) le statisticien devenu data scientist
+
+4
+
+revisite ses classiques pour se focaliser sur des outils et méthodes conduisant à
+des exécutions échelonnables (scalable) et compatibles (Mahout , R-Hadoop )
+avec les nouveaux systèmes d’information. S’il doit développer des algorithmes
+ainsi distribués, il (ré)apprend la syntaxe des langages fonctionnels (Lisp, Scheme,
+Caml) pour utiliser Scala ou Clojure.
+
+Le traitement de données volumineuses favorise donc un retour en grâce des
+langages (fonctionnels) et des méthodes robustes : k-means (Mac Queen, 1967),
+k-nn (Cover et Hart 1967)... facilement distribuables (MapReduce) sur des cen-
+taines voire milliers de nœuds associant un processeur et un ensemble de don-
+nées. On observe en outre un vif regain d’intérêt pour les problèmes d’allocation
+dynamique de ressources appelés « bandit manchot », étudiés depuis longtemps
+(Thomson, 1933) dans les essais cliniques, pour optimiser les systèmes de recom-
+mandation (par exemple dans le e-commerce). Ces problèmes sont très liés au «
+A/B testing », une technique connue en marketing visant à améliorer une réponse
+(par exemple un taux de clic) en comparant un groupe de contrôle à un groupe
+test. Il est aujourd’hui courant de pouvoir effectuer et analyser un nombre très
+important de tels tests, pour lesquels il est à la fois essentiel, de maximiser l’in-
+formation reçue pour chaque observation et de contrôler la signiﬁcativité globale
+des résultats.
+
+3 Les pistes de recherche
+
+Le rapport de McKinsey (2011) a popularisé la caractérisation du big data par
+trois « V » (volume, variété, vélocité). Ceux-ci ne font pas que faire revisiter le
+passé, ils propulsent le mathématicien / statisticien / data scientist vers de nou-
+veaux horizons de recherche mais aussi dans un écosystème, une jungle aux im-
+brications matérielles, logicielles, économiques... excessivement complexes. La
+ﬁgure 1 due à Turk et Zillis (2012) est un instantané sûrement partiel illustrant
+bien la complexité du paysage des acteurs des grandes masses de données. Il mêle
+éditeurs commerciaux de grands logiciels « ravalant » et interfaçant des outils bien
+rodés, start-ups très discrètes sur leurs algorithmes et fondations de code source
+libre largement diffusés ; tous développant des infrastructures, des outils d’ana-
+lyse, des applications ou produisant des données. Premiers concernés, les acteurs
+du monde informatique, se mobilisent rapidement dans le sillage des leaders du
+marché (Google, Yahoo, Amazon) du e-commerce.
+
+De leur côté, les acteurs, mathématiciens, statisticiens, évoluent comme c’est
+souvent le cas avec d’autres échelles de temps. D’une part ils développent des
+cadres théoriques les plus fondamentaux pour une meilleure compréhension des
+problèmes étudiés. D’autre part, ils proposent de nouvelles méthodologies et al-
+gorithmes dont ils évaluent les propriétés pour cerner leurs domaines de validité :
+
+5
+
+FIGURE 1 – Carte de l’échosystème du Big Data
+
+tantôt ils précèdent l’application, tantôt ils théorisent a posteriori des algorithmes
+et méthodes pour en étudier les propriétés.
+
+3.1 Apprentissage et statistique
+
+Le statisticien académique du siècle dernier a largement développé les études
+théoriques aﬁn de qualiﬁer les méthodes utilisées en caractérisant les lois des pa-
+ramètres, majorant ﬁnement les risques de prévision et cherchant les tests les plus
+puissants. La dynamique de recherche change avec les développements des algo-
+rithmes et méthodes à l’interface entre Apprentissage Machine et Statistique.
+
+Symptomatiquement, la « méta » librairie caret (Kuhn, 2008) de R propose
+l’accès et la comparaison de près de 140 méthodes de modélisation statistique
+ou d’apprentissage en régression ou classiﬁcation supervisée, elles-mêmes répar-
+ties dans plusieurs autres librairies de R. Certains modèles (gaussien, binomial...)
+sont étudiées depuis très longtemps, alors que d’autres méthodes comme les forêts
+aléatoires (random forest de Breiman ; 2001) sont toujours l’objet de recherches
+actives aﬁn d’en préciser ou justiﬁer les bonnes propriétés (i.e. Biau ; 2012). Pour
+beaucoup de ces méthodes, en particulier celles qui s’appuient sur le principe de
+minimisation empirique du risque, des résultats sont obtenus à partir d’inégalités
+de concentration probabilistes (i.e. Birgé et Massart ; 1993), elles-mêmes parfois
+issues d’analyses géométriques (i.e. Ledoux et Talagrant ;1991). Bien entendu,
+
+6
+
+avant que puissent être prouvées les propriétés d’un algorithme d’apprentissage,
+ses performances pratiques sont évaluées sur des données synthétiques ou réelles
+de bases publiques comme celle de l’UCI (Bache et Lichman ; 2013). Reconnais-
+sons par ailleurs que pour beaucoup de ces comparaisons 1, les différences obser-
+vées entre ces performances ne sont pas toujours très signiﬁcatives et qu’il n’est
+pas pertinent, pour un exemple pratique donné, de se lancer dans une comparaison
+systématique de toutes ces techniques !
+
+Il reste beaucoup de travail aux statisticiens et probabilistes pour étudier les
+propriétés des méthodes d’apprentissage en concurrence mais l’arrivée des don-
+nées massives change radicalement l’approche des problèmes en soulevant de
+nombreuses questions et donc pistes de recherche. Sans prétendre à l’exhausti-
+vité, en voici quelques unes triées selon les caractéristiques des trois « V ».
+
+3.2 Volume
+
+Le choix de l’infrastructure (i.e. Hadoop), pour fragmenter et archiver les don-
+nées impacte fortement les modes d’analyse susceptibles d’intégrer le changement
+d’échelle en fonction de l’objectif poursuivi. Les approches en marketing peuvent
+utiliser directement des méthodes échelonnables (scalable) comme celle des k plus
+proches voisins ou faire appel à un algorithme stochastique dérivé de celui de Ro-
+bins et Monro (1951) et plus généralement d’algorithmes de descente de gradient
+stochastique pour pouvoir estimer un modèle bien connu comme une régression
+logistique.
+
+Est-il bien nécessaire d’estimer le modèle sur tout le corpus de données dispo-
+nibles ; une estimation sur un échantillon représentatif ne sufﬁrait-elle pas ? Les
+recommandations concernant sur la taille de l’échantillon ou sous-échantillon à
+considérer ne sont guère précises ; elles dépendent essentiellement des capacités
+de calcul et de la complexité de l’algorithme. Il serait plus pertinent de préci-
+sément comparer les termes d’erreur, celui d’une optimisation stochastique avec
+celui dû à un sondage aléatoire simple ou stratiﬁé puis comparer le tout avec les
+méthodes échelonnables. Owen et al. (2012) décrivent l’usage de celles directe-
+ment interfacées avec Hadoop au sein du projet Mahout.
+
+Les comparaisons pratiques des performances des différentes méthodes de-
+viennent alors très complexes à mettre en œuvre car plusieurs autres facteurs
+interviennent tant sur la précision que sur les temps d’exécution : choix des in-
+frastructures (matérielles, logicielles) et choix de l’algorithme intégrant plus ou
+moins efﬁcacement le parallélisme des calculs.
+
+1. Voir à ce propos les scénarios d’analyse de plusieurs jeux de données publics proposés sur
+
+le site Wikistat.
+
+7
+
+3.3 Variété
+
+Le grand nombre de données étudiées entraine de fait une très grande hétéro-
+
+généité. Sous le terme de variété se cache donc de multiples problématiques.
+
+Tout d’abord les données, notamment dans un environnement industriel, peuvent
+
+se présenter sous des formes variées telles que des textes, séquences, fonctions,
+courbes, spectres, images, graphes... voire des combinaisons de l’ensemble. Au
+delà des difﬁcultés techniques inhérentes au traitement d’une telle diversité, se
+pose le problème de l’utilisation de toute cette masse d’information hétéroclite.
+Chaque structure de donnée soulève des questions originales spéciﬁques et, com-
+parer ces différentes structures entre elles, devient également compliqué à la fois
+d’un point de vue pratique mais également théorique. En effet calculer ne serait-ce
+qu’une simple moyenne ou des distances entre les objets concernés requiert une
+analyse particulière pour prendre en compte leur géométrie. Il est par exemple
+possible de prendre en considération des approximations de la distance géodé-
+sique sur une variété riemanienne (Diméglio et al. 2013). D’autre part ces données
+sont observées avec une grande variabilité qui masque bien souvent la nature du
+phénomène étudié. Il importe dès lors de révéler la structure contenue dans ces
+observations aﬁn d’en extraire l’information qu’elles contiennent. Ainsi, pour cal-
+culer la distance entre deux courbes, celle usuelle (espaces L2) est beaucoup trop
+sensible à ces légères déformations ou décalages des courbes. Un recalage préa-
+lable (time warping) est nécessaire. Une autre approche prometteuse (scattering)
+en analyse d’images consiste à représenter celles-ci dans une base d’ondelettes
+possédant des propriétés d’invariance pour certains groupes de transformations
+(Mallat et Sifre ; 2012). Cette représentation permet alors d’identiﬁer ou regrou-
+per des formes ou textures d’images particulières.
+
+Le dernier exemple concerne initialement l’analyse d’images conjointement
+avec des principes de parcimonie. Candès et al. (2004) ont montré que le compress
+sensing permet d’acquérir beaucoup plus rapidement, avec moins de mesures, une
+très bonne précision des images médicales à partir du moment où celles-ci sont
+structurées. La reconstruction de l’image fait ensuite appel à la résolution parci-
+monieuse d’un système linéaire (Dantzig selector, Candes et Tao, 2005) par op-
+timisation convexe en norme L1. Celle-ci peut avoir bien d’autres applications
+notamment pour l’analyse des très grandes matrices très creuses, produites en gé-
+nétique, génomique, fouille de texte, analyse d’incidents dans l’industrie... et leur
+complétion (Candès et Tao ; 2009).
+
+3.4 Vélocité
+
+La vélocité des données est également motrice de nouvelles recherches sur les
+algorithmes des méthodes de décision qui deviennent nécessairement adaptatives
+
+8
+
+ou séquentielles. Comment traiter au mieux le ﬂux de données au ﬁl de l’eau ? Le
+cadre classique de l’apprentissage en ligne ne s’y prête guère, qui supposait un
+échantillon ﬁxé, pour lequel le statisticien avait le temps de faire tous les calculs
+nécessaires aﬁn d’obtenir une règle de décision qui ne changerait pas de sitôt.
+
+Les approches intrinsèquement séquentielles, permettant de s’adapter progres-
+sivement au nouvelles données qui arrivent, connaissent ainsi un vif regain d’in-
+térêt ; pour l’étape d’optimisation conduisant aux règles de décision, c’est notam-
+ment le cas de la descente de gradient stochastique (Bach et Moulines 2013).
+En outre, il convient de prendre en compte le vieillissement des données : si, en
+première approche, on peut penser à utiliser une simple fenêtre glissante ou un
+facteur d’escompte (Garivier et Moulines 2011), des traitements intrinsèquement
+séquentiels et adaptatifs sont plus convaincants. À titre d’exemple, on peut penser
+aux systèmes de recommandation, comme ceux qui interviennent dans la gestion
+du contenu des pages web : le succès fulgurant de Criteo souligne l’importance
+stratégique de cette problématique.
+
+Ce sujet illustre tout particulièrement le fait que, dans un cadre séquentiel,
+les décisions prises à un instant peuvent inﬂuencer les observations futures, qui
+du coup ne peuvent pas être traitées comme un échantillon. Ainsi, le système de
+recommandation ne peut se contenter de proposer les contenus dont l’appétence
+estimée est la plus grande car, s’il le fait, il se trouvera vite piégé, ne servant plus
+qu’un nombre très restreint de contenus pas assez diversiﬁés – les autres n’étant
+simplement pas assez proposés pour que l’intérêt que leur porte l’utilisateur puisse
+être perçu.
+
+Les modèles de bandit manchot (White ; 2012), qui intéressent depuis très
+longtemps les concepteurs d’essais cliniques, constituent ici un modèle de réfé-
+rence, pour lequel Cappé et al. (2013) proposent un contrôle optimal efﬁcace. Ce
+modèle admet un certain nombre de variantes, mais il mérite encore d’être enrichi
+et complété pour pouvoir répondre à toute la diversité des contraintes applicatives.
+Récemment, il a été montré que des méthodes très simples d’inspiration bayé-
+sienne pouvaient aussi avoir un comportement optimal (Kaufmann et al 2012), ce
+qui laisse beaucoup d’espoirs quant à la possibilité de traiter des modèles com-
+plexes.
+
+4 Conclusion
+
+Ce rapide tour d’horizon montre comment, sous la pression des données, le
+métier de statisticien évolue selon le contexte, en prospecteur, bioinformaticien,
+data scientist. Mais, à travers ces avatars, l’objectif principal reste celui d’apporter
+un quatrième « V » à la déﬁnition du big data, celui de la Valorisation . Seules des
+aides à la décision pertinentes sont susceptibles de justiﬁer les efforts ﬁnanciers
+
+9
+
+consacrés à l’acquisition et au stockage devenu massif des données.
+
+L’épopée décrite dans cet article insiste sur des interactions de plus en plus
+fortes et collaborations très intriquées entre Informatique et Mathématiques pour
+relever au mieux les nouveaux déﬁs posés par l’afﬂux la complexité et le volume
+des données. A l’intérieur même des mathématiques, les contributions tendent à se
+diversiﬁer. Le machine learning s’est ainsi beaucoup appuyé sur la modélisation
+stochastique et statistique des données aﬁn de construire des algorithmes fournis-
+sant des règles de décisions pertinentes et pour obtenir des garanties théoriques
+d’efﬁcacité ou d’optimalité de ces méthodes en s’appuyant principalement sur
+des outils probabilistes (parfois d’inspiration géométrique). Les grandes masses
+de données et de signaux suscitent un grand intérêt pour l’étude des matrices aléa-
+toires de grande dimension, et en particulier de leur spectre asymptotique alors
+que les premiers résultats ont été initiés dans ce domaine par des questions de
+physique théorique (i.e. Johnstone ; 2006). Le passage à l’échelle du Big Data
+rend indispensables et centraux de nouveaux travaux dans le domaine de l’opti-
+misation convexe et plus généralement de l’analyse ; la modélisation des systèmes
+complexes, à commencer par les grands réseaux, suscitent des rapprochements
+avec certains travaux de géométrie ou d’algèbre. Le rôle du mathématicien y est
+important pour apporter un changement de perspective, souvent contre-intuitif
+mais efﬁcace, en élevant le niveau d’abstraction ou intégrant une approche sto-
+chastique. Cela permet, par exemple, de réduire le volume des mesures : du plan
+d’expérience au compressed sensing, de montrer la convergence vers un optimum
+global (algorithme stochastique), de construire le bon critère pour mesurer une
+distance adaptée (géodésique) ou introduire une pénalisation (L1) de parcimonie.
+Pertinence et efﬁcacité de l’analyse rendent nécessaires des compétences en
+Informatique, Mathématiques comme en Statistique. Elles ne peuvent raisonna-
+blement être acquises qu’au niveau Master 2 ou même doctorat, et ce sont des
+équipes pluridisciplinaires qui seront les plus même d’atteindre efﬁcacement les
+objectifs. Au statisticien, ou plutôt maintenant au data scientist, d’assurer l’inter-
+face entre des compétences en systèmes d’information, langage, algorithmique,
+d’une part et mathématiques d’autre part. Cela est indispensable à l’identiﬁcation
+d’informations signiﬁcatives (au sens statistique), prédictives, et à forte valeur
+ajoutée.
+
+Bibliographie
+
+Benjamini Y., Hochberg Y. (1995). Controlling the false discovery rate : a
+practical and powerful approach to multiple testing. Journal of the Royal Statisti-
+cal Society, Series B, 57-1, 289-300.
+
+Bach F. et Moulines E. (2013). Non-strongly-convex smooth stochastic ap-
+
+10
+
+proximation with convergence rate O(1/n). To appear in Advances in Neural In-
+formation Processing Systems (NIPS).
+
+Bache K. et Lichman, M. (2013). UCI Machine Learning Repository. Irvine,
+
+CA : University of California, School of Information and Computer Science.
+
+Biau, G. (2012). Analysis of a random forests model, Journal of Machine
+
+Learning Research, Vol. 13, pp. 1063-1095.
+
+Breiman L. (2001). Random forests. Machine Learning, 45 :5-32.
+Candès E. J., Romberg J. et Tao T. (2004). Robust uncertainty principles :
+exact signal reconstruction from highly incomplete frequency information. IEEE
+Trans. Inform. Theory, 52 489-509.
+
+Candès E. J. et Tao T. (2005). The Dantzig selector : statistical estimation
+
+when p is much larger than n. Annals of Statistics, 35 2313-2351.
+
+Candès E. J. et Tao. T. (2009). The power of convex relaxation : Near-optimal
+
+matrix completion. IEEE Trans. Inform. Theory 56(5), 2053-2080.
+
+Cappé O., Garivier A., Maillard O. A., Munos R. et Stoltz G. (2013). Kullback-
+Leibler Upper Conﬁdence Bounds for Optimal Sequential Allocation. Annals of
+Statistics, vol.41(3) pp.1 516-1 541.
+
+Dimeglio C., Gallón S., Loubes J-M., et Maza, E. (2014). A robust algorithm
+for template curve estimation based on manifold embedding. Computational Sta-
+tistics & Data Analysis, 70-C, 373-386.
+
+Fayyad U. M., Piatetsky-Shapiro G. et Smyth P. (1996). From data mining to
+knowledge discovery : an overview, Advances in Knowledge Disco-very and Data
+Mining (U. M. Fayyad, G. Piatetsky-Shapiro, P. Smyth et R. Uthurusamy, réds.),
+AAAI Press/MIT Press, 1996, p. 1-34.
+
+Garivier, A. et Moulines, E. (2011). On Upper-Conﬁdence Bound Policies for
+Non-stationary Bandit Problems Algorithmic Learning Theory n°22 Oct. 2011
+pp.174-188
+
+Genuer R., Poggi J.-M., Tuleau-Malot C. (2010) Variable selection using Ran-
+
+dom Forests. Pattern Recognition Letters 31 :2225-2236.
+
+Guyon I., Weston J., Barnhill S., and Vapnik V.N. (2002) Gene selection for
+cancer classiﬁcation using support vector machines. Machine Learning, 46(1-
+3) :389-422.
+
+Hastie T., Tibshirani R., Friedman J. (2009). The Elements of Statistical Lear-
+
+ning : Data Mining, Inference, and Prediction. Second Edition, Springer.
+
+Johnstone I. M. (2006). High dimensional statistical inference and random
+matrices, Proceedings of the International Congress of Mathematicians, Madrid,
+Spain.
+
+Kaufmann E., Korda N., Munos R. (2012). Thompson Sampling : an asympto-
+tically optimal ﬁnite-time analysis. Proceedings of the 23rd International Confe-
+rence on Algorithmic Learning Theory (ALT).
+
+11
+
+Kuhn M. (2008). Building Predictive Models in R Using the caret Package,
+
+Journal of Statistical Software, 28-5.
+
+Lê Cao K. A., Rossouw D., Robert-Granié C., Besse P. (2008). A sparse PLS
+for variable selection when integrating Omics data, Statistical Applications in Ge-
+netics and Molecular Biology, Vol. 7 : Iss. 1, Article 35.
+
+Lê Cao K. A., Boistard S., Besse P. (2011) Sparse PLS Discriminant Analy-
+sis : biologically relevant feature selection and graphical displays for multiclass
+problems. BMC Bioinformatics, 12 :253.
+
+MacQueen J. B. (1967). Some Methods for classiﬁcation and Analysis of Mul-
+tivariate Observations. Proceedings of 5th Berkeley Symposium on Mathematical
+Statistics and Probability 1. University of California Press. pp. 281-297.
+
+Mallat S. et Sifre L. (2012). Combined Scattering for Rotation Invariant Tex-
+
+ture Analysis Proc. European Symposium on Artiﬁcial Neural Networks.
+
+Owen S., Anil R., Dunning T. et Friedman E. (2012). Mahout in action. Man-
+
+ning.
+
+Thompson W. (1933). On the likelihood that one unknown probability exceeds
+another in view of the evidence of two samples, Bulletin of the American Mathe-
+matics Society, vol. 25, pp. 285-294, 1933
+
+Tibshirani, R. (1996). Regression shrinkage and selection via the lasso. J.
+
+Royal. Statist. Soc B., 58(1) :267-288.
+
+White J. M. (2012). Bandit Algorithms for Website Optimization Developing,
+
+Deploying, and Debugging, O’Reilly Media.
+
+12
+
+

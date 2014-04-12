@@ -36,7 +36,7 @@ def FindDataset(line):
         return True
     return False
 
-paper_dir = '../data/'
+paper_dir = '../data/training_data/'
 files = os.listdir(paper_dir)
 for f in files:
     if f.endswith('_refined.txt'):
@@ -54,7 +54,7 @@ for f in files:
                 expSectionNum = -1
                 print line
             # Find Dataset Line in Experiment Section
-            if FindDataset(line):
+            if expSectionNum!= -1 and FindDataset(line):
                 outfp.write(line + '\n')
         outfp.close()
         print f+" close"
