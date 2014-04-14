@@ -44,18 +44,26 @@ for f in files:
         infp = open(paper_dir+f,'rb')
         outfp = file(paper_dir+f.replace('refined','dataset'), 'w')
         expSectionNum = -1
+        flag = False
         for line in infp:
             # Experiment Section
             if line[0].isdigit() and ExpSectionFilter(line.lower()): 
                 print line
                 expSectionNum = int(line[0])
+                flag = True
             # Next Section
             if line[0].isdigit() and int(line[0]) == expSectionNum + 1 and VerifySection(line):
                 expSectionNum = -1
                 print line
             # Find Dataset Line in Experiment Section
-            if expSectionNum!= -1 and FindDataset(line):
+            if flag==True and expSectionNum!= -1 and FindDataset(line):
                 outfp.write(line + '\n')
+        # No Experiment Section
+        if flag==False:
+            infp = open(paper_dir+f,'rb')
+            for line in infp:
+                if FindDataset(line):
+                    outfp.write(line + '\n')
         outfp.close()
         print f+" close"
                 
