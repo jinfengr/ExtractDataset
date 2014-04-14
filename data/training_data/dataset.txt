@@ -1,6 +1,6 @@
 KDD1,Isolet,Multiple Features,Optical Digits
 KDD2,Wiki,Flickr
-KDD3
+KDD3,UCR,New
 KDD4,iris, wine, glass, vehicle, vowel, segment, dna, satimage, usps, zoo ,yeast, pageblock, anneal, solar, splice, ecoli, nursery, soybean, arrhythmia, opt- digits, mfeat, pendigit
 KDD5,Allen Developing Mouse Brain Atlas
 KDD6,4QSAR COX2,4QSAR DHFR,CPD MOUSE,CPD RAT,ISS MOUSE,ISS RAT,Suth COX2,Suth DHFR,Suth ER TOX,FDAMDD,Biodeg,Tox09,ER LIT,CYP INH 2C9,CYP SUB 2C9,Fontaine,NCI AIDS,CPDB MUT
@@ -9,7 +9,7 @@ KDD8,Yahoo! Music
 KDD9,Business,Person,DBLP-ACM,Scholar-DBLP
 KDD10,UCI,iris,wine,pendigits,waveform,segmentation,face
 KDD11,RCV-1,20NG
-KDD12
+KDD12,ACE2005
 KDD13,DBLP
 KDD14,Pumbs,Chess
 KDD15,20-newsgroups
@@ -21,7 +21,29 @@ KDD20,Douban,Tencent
 KDD21,Xspectra,AT&T face image data,Movielens,Netflix
 KDD22,Data Mining,Medical Informatics,Theory,Visualization,Database
 KDD23,Congress,IMDb,Amazon
-KDD24
 KDD25,Transaction
 KDD26,Giffen Behavior,EAEF,Wine,Ames Housing
-KDD27,Account1,Account2
+KDD28,Account1,Account2
+KDD29,Stack Overflow
+KDD30,Yahoo! News
+KDD31,Digital Cameras,Hotels,Restaurants,Recipes
+KDD32,SCOP,Ding-Dubchak
+KDD33,NONE
+KDD34,NONE
+KDD35,Social,Routing,Web
+KDD36,GPS,GPS-1,GPS-2,GPS-3,GPS-4,GPS-5,Guru,Guru-1,Guru-2,Guru-3,Guru-4,Guru-5
+KDD37,Epinions
+KDD38,Meetup EBSN,Gowalla LBSN
+KDD39,NONE
+KDD40,Poisson
+KDD41,blog,LJ,Web,BTC
+KDD42,WebClick,Ondemand TV
+KDD43,FDG-PET,Breast Cancer
+KDD44,accidents,chess,connect,mushroom,pumsb,pumsb_star
+KDD45,Twitter,
+KDD46,Digg,Reddit,Epinions
+KDD47,NELL,NELL-1,NELL-2,Random
+KDD48,Delicious,Last.fm
+KDD49,NUS-WIDE Object,leaves
+KDD50,Twitter
+KDD51,IMDB,DBLP,Four Area
