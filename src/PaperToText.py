@@ -51,6 +51,9 @@ def refineText(infp, outfp):
             textline = current[0:-1]
         else:
             textline = current+' '
+    for token in nltk.word_tokenize(''.join(stringlist)):
+        outfp.write(token+' ')
+    outfp.write('\n')
 
 paper_dir = '../data/training_data/'
 
@@ -63,7 +66,6 @@ paper_dir = '../data/training_data/'
 #f = "KDD1.txt"
 #infp = open(paper_dir+f,'rb')
 #outfp = file(paper_dir+f.replace('.txt','_refined.txt'), 'w')
-#print 'Refining ' + f + '...'
 #refineText(infp, outfp)
 #outfp.close()
 #infp.close()
