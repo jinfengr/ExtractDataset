@@ -51,7 +51,6 @@ def refineText(infp, outfp):
             textline = current[0:-1]
         else:
             textline = current+' '
-    
 
 paper_dir = '../data/training_data/'
 
@@ -71,7 +70,8 @@ paper_dir = '../data/training_data/'
 
 files = os.listdir(paper_dir)
 for f in files:
-    if f.endswith('.pdf') and not f.replace('.pdf','.txt') in files:
+#    if f.endswith('.pdf') and not f.replace('.pdf','.txt') in files:
+    if f.endswith('.pdf'):
         infp = open(paper_dir+f,'rb')
         outfp = file(paper_dir+f.replace('.pdf','.txt'), 'w')
         print 'Converting ' + f + '...'
