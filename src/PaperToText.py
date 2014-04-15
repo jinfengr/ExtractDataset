@@ -1,4 +1,5 @@
 import os
+import nltk
 
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument
@@ -6,8 +7,9 @@ from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfpage import PDFTextExtractionNotAllowed
 from pdfminer.pdfinterp import PDFResourceManager
 from pdfminer.pdfinterp import PDFPageInterpreter
-from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
+
+from converter import TextConverter
 
 def extractText(infp, outfp):
     # Create a PDF parser object associated with the file object.
@@ -30,20 +32,42 @@ def extractText(infp, outfp):
         
 def refineText(infp, outfp):
     stringlist = []
+    textline = ""
+    size = ""
     for line in infp:
         current = line.strip().replace('  ',' ')
-        if current == '':
-            outfp.write(''.join(stringlist)+'\n')
-            stringlist = []
-            outfp.write('\n')
+        if current.startswith("<size>"):
+            if current != size and size != "":
+                for token in nltk.word_tokenize(''.join(stringlist)):
+                    outfp.write(token+' ')
+                outfp.write('\n')
+                stringlist = []
+                outfp.write('\n')
+            stringlist.append(textline)
+            size = current
+        elif current == '':
+            continue
         elif current[-1] == '-':
-            stringlist.append(current[0:-1])
+            textline = current[0:-1]
         else:
-            stringlist.append(current+' ')
-    outfp.write(''.join(stringlist)+'\n')
+            textline = current+' '
     
 
 paper_dir = '../data/training_data/'
+
+#f = "KDD1.pdf"
+#infp = open(paper_dir+f,'rb')
+#outfp = file(paper_dir+f.replace('.pdf','.txt'), 'w')
+#extractText(infp, outfp)
+#outfp.close()
+#infp.close()
+#f = "KDD1.txt"
+#infp = open(paper_dir+f,'rb')
+#outfp = file(paper_dir+f.replace('.txt','_refined.txt'), 'w')
+#print 'Refining ' + f + '...'
+#refineText(infp, outfp)
+#outfp.close()
+#infp.close()
 
 files = os.listdir(paper_dir)
 for f in files:
