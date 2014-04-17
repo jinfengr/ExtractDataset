@@ -10,6 +10,7 @@ from pdfminer.pdfinterp import PDFPageInterpreter
 from pdfminer.layout import LAParams
 
 from converter import TextConverter
+from tokenizer import MyTokenizer
 
 def extractText(infp, outfp):
     # Create a PDF parser object associated with the file object.
@@ -39,7 +40,7 @@ def refineText(infp, outfp):
         if current.startswith("<size>"):
             if current != size and size != "":
                 for sentence in nltk.sent_tokenize(''.join(stringlist)):
-                    for token in nltk.word_tokenize(sentence):
+                    for token in MyTokenizer().tokenize(sentence):
                         outfp.write(token+' ')
                 outfp.write('\n')
                 stringlist = []
@@ -52,8 +53,9 @@ def refineText(infp, outfp):
             textline = current[0:-1]
         else:
             textline = current+' '
-    for token in nltk.word_tokenize(''.join(stringlist)):
-        outfp.write(token+' ')
+    for sentence in nltk.sent_tokenize(''.join(stringlist)):
+        for token in MyTokenizer().tokenize(sentence):
+            outfp.write(token+' ')
     outfp.write('\n')
 
 paper_dir = '../data/training_data/'
