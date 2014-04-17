@@ -29,7 +29,7 @@ def extractText(infp, outfp):
     # Process each page contained in the document.
     for page in PDFPage.create_pages(document):
         interpreter.process_page(page)
-        
+
 def refineText(infp, outfp):
     stringlist = []
     textline = ""
@@ -38,8 +38,9 @@ def refineText(infp, outfp):
         current = line.strip().replace('  ',' ')
         if current.startswith("<size>"):
             if current != size and size != "":
-                for token in nltk.word_tokenize(''.join(stringlist)):
-                    outfp.write(token+' ')
+                for sentence in nltk.sent_tokenize(''.join(stringlist)):
+                    for token in nltk.word_tokenize(sentence):
+                        outfp.write(token+' ')
                 outfp.write('\n')
                 stringlist = []
                 outfp.write('\n')
