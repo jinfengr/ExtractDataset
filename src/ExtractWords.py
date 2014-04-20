@@ -28,7 +28,7 @@ for f in files:
             for s in sentences:
                 for dataset in data:
                     if s.find(dataset)>=0:
-                        tokens = tokenizer.tokenize(s.encode('UTF_8'))
+                        tokens = tokenizer.tokenize(s)
                         tokens = [stem(token.lower()) for token in tokens]
                         for word in tokens:
                             if words_freq.has_key(word):
