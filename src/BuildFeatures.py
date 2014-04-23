@@ -57,7 +57,7 @@ def SaveFeatures(features,pn):
     f = open(data_dir+"features_"+pn+".dat","w")
     for dataset in features:
         if dataset != "":
-            f.write(dataset+":")
+            f.write(dataset.replace(':',' ')+":")
             for index in range(COUNT):
                 freq = features[dataset][2*index]
                 if freq==0:
@@ -70,15 +70,19 @@ def SaveFeatures(features,pn):
          
 data_dir = '../data/training_data/'
 
-COUNT = 500
-count = 0
-keywords = {}
-with open(data_dir+'keywords.dat') as f:
-    for line in f:
-        if count <= COUNT:
-            tokens = line.rstrip('\n').split(' ')
-            keywords[tokens[0]] = tokens[1]
-            count += 1
+def LoadKeywords():
+    count = 0
+    keywords = {}
+    with open('../data/training_data/keywords.dat') as f:
+        for line in f:
+            if count <= COUNT:
+                tokens = line.rstrip('\n').split(' ')
+                keywords[tokens[0]] = tokens[1]
+                count += 1
+    return keywords
+
+COUNT = 200
+keywords = LoadKeywords()
 
 dataset_list = {}
 features_pos = {}
