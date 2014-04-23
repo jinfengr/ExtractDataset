@@ -5,7 +5,6 @@ Created on Apr 10, 2014
 '''
 import os
 import re
-from stemming.porter2 import stem
 from nltk.tokenize import RegexpTokenizer
 
 data_dir = '../data/training_data/'
@@ -14,7 +13,8 @@ datasets = {}
 with open(data_dir+'dataset.dat') as f:
     for line in f:
         sets = line.rstrip('\n').split(',')
-        datasets[sets[0]]=sets[1:]
+        if(sets[1:]!=["NONE"]):
+            datasets[sets[0]]=sets[1:]
 
 words_freq = {}
 files = os.listdir(data_dir)
@@ -22,14 +22,25 @@ tokenizer = RegexpTokenizer("[a-zA-Z-]+", flags=re.UNICODE)
 for f in files:
     if f.endswith('_dataset.txt'):
         infp = open(data_dir+f,'rb')
-        data = datasets[f[0:-12]]
+        if datasets.has_key(f[0:-12]):
+            data = datasets[f[0:-12]]
         for para in infp:
             sentences = para.split(' . ')
-            for s in sentences:
+            for i in range(len(sentences)):
+                s = sentences[i]
+                nexts = ""
+                if i < len(sentences)-1:
+                    nexts = sentences[i+1]
                 for dataset in data:
-                    if s.find(dataset)>=0:
+                    name_term = dataset.split(' ')
+                    tokens = tokenizer.tokenize(s)
+                    flag = True
+                    for name_word in name_term:
+                        if name_word not in tokens:
+                            flag = False
+                    if flag==True:
                         tokens = tokenizer.tokenize(s)
-                        tokens = [stem(token.lower()) for token in tokens]
+                        tokens.extend(tokenizer.tokenize(nexts))
                         for word in tokens:
                             if words_freq.has_key(word):
                                 words_freq[word] += 1

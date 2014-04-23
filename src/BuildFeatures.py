@@ -27,7 +27,6 @@ def ExtractPosFeatures(paragraph, dataset, features):
                     index = keywords.keys().index(word)
                     features[dataset][2*index] += 1
                     features[dataset][2*index+1] += dist
-            flag = False
             
 def ExtractNegFeatures(paragraph, datasets, features):
     regexp = '(The|the) (.{1,30}?) (dataset|data|set)'
@@ -57,15 +56,16 @@ def ExtractNegFeatures(paragraph, datasets, features):
 def SaveFeatures(features,pn):
     f = open(data_dir+"features_"+pn+".dat","w")
     for dataset in features:
-        f.write(dataset+":")
-        for index in range(COUNT):
-            freq = features[dataset][2*index]
-            if freq==0:
-                dist = 0
-            else:
-                dist = features[dataset][2*index+1]/freq
-            f.write(str(freq) +","+ str(dist)+",")
-        f.write("\n")
+        if dataset != "":
+            f.write(dataset+":")
+            for index in range(COUNT):
+                freq = features[dataset][2*index]
+                if freq==0:
+                    dist = 0
+                else:
+                    dist = features[dataset][2*index+1]/freq
+                f.write(str(freq) +","+ str(dist)+",")
+            f.write("\n")
     f.close()
          
 data_dir = '../data/training_data/'
@@ -87,13 +87,15 @@ features_neg = defaultdict(defaultdict)
 with open(data_dir+'dataset.dat') as f:
     for line in f:
         sets = line.rstrip('\n').split(',')
-        dataset_list[sets[0]]=sets[1:]
+        if sets[1:]!=["NONE"] :
+            dataset_list[sets[0]]=sets[1:]
 
 files = os.listdir(data_dir)
 for f in files:
     if f.endswith('_dataset.txt'):
         infp = open(data_dir+f,'rb')
-        datasets = dataset_list[f[0:-12]]
+        if dataset_list.has_key(f[0:-12]):
+            datasets = dataset_list[f[0:-12]]
         for dataset in datasets:
                 features_pos[dataset] = defaultdict(int)
         for para in infp:
