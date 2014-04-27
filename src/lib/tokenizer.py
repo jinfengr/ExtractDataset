@@ -100,8 +100,23 @@ class MyTokenizer(TokenizerI):
 
         # cite([1]) --> #REF#
         text = re.sub(r"\[ \d+( ,  \d+)* \]", "#REF#", text)
+        
+        tokens = text.split()
+        upper = -1
+        for i in range(len(tokens)):
+            if tokens[i][0].isupper():
+                if upper >= 0:
+                    tokens[upper] += " " + tokens[i]
+                    tokens[i] = "#"
+                else:
+                    upper = i
+            else:
+                upper = -1
+                
+        while "#" in tokens:
+            tokens.remove("#")
 
-        return text.split()
+        return tokens
 
 
 if __name__ == "__main__":
