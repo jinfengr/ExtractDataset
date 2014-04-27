@@ -9,8 +9,8 @@ from pdfminer.pdfinterp import PDFResourceManager
 from pdfminer.pdfinterp import PDFPageInterpreter
 from pdfminer.layout import LAParams
 
-from converter import TextConverter
-from tokenizer import MyTokenizer
+from lib.converter import TextConverter
+from lib.tokenizer import MyTokenizer
 
 def extractText(infp, outfp):
     # Create a PDF parser object associated with the file object.
