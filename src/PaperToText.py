@@ -41,7 +41,7 @@ def refineText(infp, outfp):
             if current != size and size != "":
                 for sentence in nltk.sent_tokenize(''.join(stringlist)):
                     for token in MyTokenizer().tokenize(sentence):
-                        outfp.write(token+" # ")
+                        outfp.write(token+" ")
                 outfp.write('\n')
                 stringlist = []
                 outfp.write('\n')
@@ -55,7 +55,7 @@ def refineText(infp, outfp):
             textline = current+' '
     for sentence in nltk.sent_tokenize(''.join(stringlist)):
         for token in MyTokenizer().tokenize(sentence):
-            outfp.write(token+" # ")
+            outfp.write(token+" ")
     outfp.write('\n')
 
 paper_dir = '../data/training_data/'
@@ -73,19 +73,19 @@ paper_dir = '../data/training_data/'
 #outfp.close()
 #infp.close()
 
-files = os.listdir(paper_dir)
-for f in files:
-#    if f.endswith('.pdf') and not f.replace('.pdf','.txt') in files:
-    if f.endswith('.pdf'):
-        infp = open(paper_dir+f,'rb')
-        outfp = file(paper_dir+f.replace('.pdf','.txt'), 'w')
-        print 'Converting ' + f + '...'
-        try:
-            extractText(infp, outfp)
-        except (ValueError, TypeError):
-            print "Error! " + f
-        outfp.close()
-        infp.close()
+#files = os.listdir(paper_dir)
+#for f in files:
+##    if f.endswith('.pdf') and not f.replace('.pdf','.txt') in files:
+#    if f.endswith('.pdf'):
+#        infp = open(paper_dir+f,'rb')
+#        outfp = file(paper_dir+f.replace('.pdf','.txt'), 'w')
+#        print 'Converting ' + f + '...'
+#        try:
+#            extractText(infp, outfp)
+#        except (ValueError, TypeError):
+#            print "Error! " + f
+#        outfp.close()
+#        infp.close()
 
 files = os.listdir(paper_dir)
 for f in files:

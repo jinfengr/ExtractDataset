@@ -106,7 +106,7 @@ class MyTokenizer(TokenizerI):
         for i in range(len(tokens)):
             if tokens[i][0].isupper():
                 if upper >= 0:
-                    tokens[upper] += " " + tokens[i]
+                    tokens[upper] += "#" + tokens[i]
                     tokens[i] = "#"
                 else:
                     upper = i
