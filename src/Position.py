@@ -36,6 +36,13 @@ def FindDataset(line):
         return True
     return False
 
+def ExtractFigure(line):
+    regexp = 'figure|Figure|table|Table'
+    pattern = re.compile(regexp)
+    if pattern.search(line):
+        return True
+    return False
+
 paper_dir = '../data/training_data/'
 files = os.listdir(paper_dir)
 for f in files:
@@ -43,6 +50,7 @@ for f in files:
         print f+" open"
         infp = open(paper_dir+f,'rb')
         outfp = file(paper_dir+f.replace('refined','dataset'), 'w')
+        figurefp = file(paper_dir+f.replace('refined','figure'), 'w')
         expSectionNum = -1
         flag = False
         for line in infp:
@@ -58,6 +66,9 @@ for f in files:
             # Find Dataset Line in Experiment Section
             if flag==True and expSectionNum!= -1 and FindDataset(line):
                 outfp.write(line + '\n')
+            for sentence in line.split('.'):
+                if ExtractFigure(sentence):
+                    figurefp.write(sentence + '\n')
         # No Experiment Section
         if flag==False:
             infp = open(paper_dir+f,'rb')
@@ -65,6 +76,7 @@ for f in files:
                 if FindDataset(line):
                     outfp.write(line + '\n')
         outfp.close()
+        figurefp.close()
         print f+" close"
                 
                     

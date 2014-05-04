@@ -73,19 +73,18 @@ paper_dir = '../data/training_data/'
 #outfp.close()
 #infp.close()
 
-#files = os.listdir(paper_dir)
-#for f in files:
-##    if f.endswith('.pdf') and not f.replace('.pdf','.txt') in files:
-#    if f.endswith('.pdf'):
-#        infp = open(paper_dir+f,'rb')
-#        outfp = file(paper_dir+f.replace('.pdf','.txt'), 'w')
-#        print 'Converting ' + f + '...'
-#        try:
-#            extractText(infp, outfp)
-#        except (ValueError, TypeError):
-#            print "Error! " + f
-#        outfp.close()
-#        infp.close()
+files = os.listdir(paper_dir)
+for f in files:
+    if f.endswith('.pdf') and not f.replace('.pdf','.txt') in files:
+        infp = open(paper_dir+f,'rb')
+        outfp = file(paper_dir+f.replace('.pdf','.txt'), 'w')
+        print 'Converting ' + f + '...'
+        try:
+            extractText(infp, outfp)
+        except (ValueError, TypeError):
+            print "Error! " + f
+        outfp.close()
+        infp.close()
 
 files = os.listdir(paper_dir)
 for f in files:

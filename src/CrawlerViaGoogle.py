@@ -11,13 +11,13 @@ from bs4 import BeautifulSoup
 from pygoogle import pygoogle
 from xgoogle.search import GoogleSearch, SearchError
 
-paper_dir = '../data/training_data/'
+paper_dir = '../data/testing_data/'
 seed_url = 'http://kdd2012.sigkdd.org/papers.shtml'
 soup = BeautifulSoup(urllib2.urlopen(seed_url).read())
 papers_tags = soup.findAll('p')
 pattern = re.compile('Paper')
 count = 0
-last_count = 48
+last_count = 113
 for paper in papers_tags:
     if pattern.match(paper.getText()):
         count = count + 1
