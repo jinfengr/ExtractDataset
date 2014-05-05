@@ -86,11 +86,12 @@ Each feature function takes on the value of one of these real-valued features $b
 \[
 	f_k(s_{i-1}, s_i, o, i) = 
 	\begin{cases}
-		b(o, i), &\text{if $s_{i-1} = DT$ and $s_{i} = DATASET$} \\
+		b(o, i), &\text{if $s_{i-1} = DT$} \\
+			  & \text{and $s_{i} = DATASET$}\\
 		0,	   &\text{otherwise}
 	\end{cases}
 \]
-In fact, you can ask arbitrary questions(features) of the possible distribution over input sequence. We use $F_k(s, o) = \sum_{i}^n f_{k}(s_{i-1}, s_{i}, o, i)$ to sum the feature counts over input sequence and state sequence. Therefore, the conditional probability of predicted state sequence given an input sequence $P(s \| o, \lambda)$ can be rewritten as:
+In fact, you can ask arbitrary questions(features) of the possible distribution over input sequence. We use $F_k(s, o) = \sum_{i}^n f_{k}(s_{i-1}, s_{i}, o, i)$ to denote the sum of the feature counts over input sequence and state sequence. Therefore, the conditional probability of predicted state sequence given an input sequence $P(s \| o, \lambda)$ can be rewritten as:
 \[
 	P(s | o, \lambda) = \frac{1}{Z_o} exp \left( \sum_{k} \lambda_{k} F_k(s, o) \right)
 \]
@@ -155,7 +156,7 @@ Multiple Features and Optical Digits are two datasets. Keyword \textbf{consist} 
 \item Though datasets Multiple Features and Optical Digits are in coordinate relations, the keyword \textbf{consist} has different physical distances to the datasets.
 \item The keyword \textbf{data} is a modifier to its followed phrases (handwritten numerals), which has little relation to the datasets Multiple Features and Optical Digits. 
 \end{enumerate}
-Therefore, we purposed to replace physical distance with level distance by building a dependency tree over the candidate sentence. Figure 1 is the dependency tree of previous example sentence. Now the keyword \textbf{consist} has same level distance 0 to both the datasets, and \textbf{data} has a much larger level distance 3 to the datasets. We define level distance to be the count of traversal paths for the words in different levels. For the words in the same level, the level distance is 0.
+Therefore, we purposed to replace physical distance with level distance by building a dependency tree over the candidate sentence. Figure 1 is the dependency tree of previous example sentence. Now the keyword \textbf{consist} has same level distance 0 to both datasets, and \textbf{data} has a much larger level distance 3 to the datasets. We define level distance to be the count of traversal paths for the words in different levels. For the words in the same level, the level distance is 0.
 
 \begin{figure}[t]\centering
 \includegraphics[width=1.05\linewidth]{figures/level-distance.png}
@@ -165,60 +166,28 @@ Therefore, we purposed to replace physical distance with level distance by build
 \end{figure}
 
 \subsection{CRF Feature Space}
-\label{sect:pdf}
+Conditional Random Fields supports the use of many rich and overlapping local and layout features. In some degree, conditional random fields reduces a complex structural prediction problem to finding a good set of features to capture the intrinsic patterns of specified problem. Thus, feature selection is vital to the performance of a conditional random field model. In this section, we explore some efficient design of the feature space for the problem of dataset extraction.
+\begin{enumerate}
+\item \textbf{Local Features.} For each token to be predicted, we construct a neighboring window with size of 1. All neighboring tokens located in the window [-1, 1] are considered as a feature. Also the combination of the previous token and following token constitute another feature. For example, the window of token 'DBLP' is the sequence 'the DBLP dataset', then we would have 3 unigram features for each token and a bigram features for the combination of token 'the' and 'dataset'.  
+\item \textbf{Part-of-Speech Tagging Features.} Each token is matched to a POS tagging, e.g, NN, VB. Similar like local features, a neighboring window with size of 2 is constructed. Five unigram features for each tag located in the neighboring window, and 4 bigram features for any two consecutive tags are constructed.  
+\item \textbf{Heuristic Features.} We use a subset of features from the heuristic features in Sec. 3.2.1, including \textit{Capitol, Has-Dash, Mixed-Case, In-Figure, Position. } 
+\end{enumerate}
 
-For the production of the electronic manuscript you must use Adobe's
-Portable Document Format (PDF). PDF files are usually produced from
-\LaTeX\ using the \textit{pdflatex} command. If your version of
-\LaTeX\ produces Postscript files, you can convert these into PDF
-using \textit{ps2pdf} or \textit{dvipdf}. On Windows, you can also use
-Adobe Distiller to generate PDF.
+\section{Semi-Supervised Learning of Conditional Random Fields}
+The approaches discussed in Section 3 introduce a supervised learning process for dataset recognition problem. In a more realistic scenario, we are to start with a small set of seed items( in this case, labeled datasets and documents) and iteratively grow it by finding new contextual patterns that extracts the set of seeds from the texts. Here we show how to extend conditional random fields model to such an semi-supervised (bootstrap) learning process. 
 
-Please make sure that your PDF file includes all the necessary fonts
-(especially tree diagrams, symbols, and fonts with Asian
-characters). When you print or create the PDF file, there is usually
-an option in your printer setup to include none, all or just
-non-standard fonts.  Please make sure that you select the option of
-including ALL the fonts. \textbf{Before sending it, test your PDF by
-  printing it from a computer different from the one where it was
-  created.} Moreover, some word processors may generate very large PDF
-files, where each page is rendered as an image. Such images may
-reproduce poorly. In this case, try alternative ways to obtain the
-PDF. One way on some systems is to install a driver for a postscript
-printer, send your document to the printer specifying ``Output to a
-file'', then convert the file to PDF.
+\subsection{Seeds Selection Criteria}
+For each iteration in the semi-supervised learning process, CRF labeled a new set of candidates as datasets from the testing data. There exist some false predicted datasets in the intermediate results. Thus it would be in trouble if we take all the predicted datasets as new seeds for next iteration, since the mis-labeled datasets will lead to extracting some incorrect contextual patterns in next phase. What's more, this mis-labeled error will continue to grow and finally result in a totally low performance prediction model as the iteration repeats. On the other hand, at the beginning of start point, we are only given a small set of seeds, which further means the contextual patterns found by these seeds are limited. Thus datasets appeared in previous unseen patterns will be false predicted. Therefore, at the end of each iteration, an empirical question is how to choose the subset of new seeds which would not introduce many mis-labeled errors and also make it more probable to find new contextual patterns in next iterations. 
 
-It is of utmost importance to specify the \textbf{A4 format} (21 cm
-x 29.7 cm) when formatting the paper. When working with
-{\tt dvips}, for instance, one should specify {\tt -t a4}.
+Two evaluation metrics are purposed to balance the choice of reducing the mis-labeled error and finding more contextual patterns. First, conditional random model will generate a probability score for each predicted word. This probability score represent the confidence of the prediction result, thus could be measured as the probability of mis-labeled error. One straightforward strategy for seeds selection is to pick some predefined percentage of labeled datasets with highest confidence score. 
 
-Print-outs of the PDF file on A4 paper should be identical to the
-hardcopy version. If you cannot meet the above requirements about the
-production of your electronic submission, please contact the
-publication chairs as soon as possible.
+Second, we purposed a novel evaluation metric, called \emph{Pattern Contribution Score}, to measure the contribution of certain predicted datasets to finding new contextual patterns. Remember in Sec 2.2, for each feature function $f_k$, we use $F_k(s, o) = \sum_{i}^n f_{k}(s_{i-1}, s_{i}, o, i)$ to denote the sum of the feature counts over input sequence and state sequence. Contextual patterns are implied by these feature counts, thus a feature function with higher feature counts means its corresponding pattern is more influential to help recognizing new datasets. At the end of each iteration, our work is to select the datasets contributing to the feature functions with low feature counts, thus to find some previous unseen patterns. Aiming at this objective, we define the \emph{pattern contribution score} as follows. For each predicted dataset $d_j$, we compute the increase of feature counts over all feature functions $\{ f_1, f_2, ... ,f_m\}$, thus $\Delta I_j = (\Delta F_1, \Delta F_2, ... ,\Delta F_m)$. In each iteration, we maintain a vector of feature counts over respective feature function as $F = (F_1, F_2, ..., F_m)$. The \emph{Pattern Contribution Score} \textbf{$s$} is measure the KL Divergence Score of distribution vector $F$ and $\Delta I_j$:
+\[
+	s_j = D_{KL}(\Delta I_j \| F) = \sum_{k=1}^m \Delta I_j^k \ln \frac{\Delta I_j^k}{F^k}
+\]
+The KL Divergence Score measures the differences between two probability distributions. A higher pattern contribution score means more differences between $\Delta I_j$ and $F^k$, thus is more probable to find new contextual patterns. The above two metrics (\textit{Confidence Score} and \textit{Pattern Contribution Score}) emphasize on either reducing the mislabeled error or finding new contextual patterns. How these two factors balance is an empirical question we explore.
 
-
-\subsection{Layout}
-\label{ssec:layout}
-
-Format manuscripts two columns to a page, in the manner these
-instructions are formatted. The exact dimensions for a page on A4
-paper are:
-
-\begin{itemize}
-\item Left and right margins: 2.5 cm
-\item Top margin: 2.5 cm
-\item Bottom margin: 2.5 cm
-\item Column width: 7.7 cm
-\item Column height: 24.7 cm
-\item Gap between columns: 0.6 cm
-\end{itemize}
-
-\noindent Papers should not be submitted on any other paper size.
- If you cannot meet the above requirements about the production of your electronic submission, please contact the publication chairs above as soon as possible.
-
-
-\subsection{Fonts}
+\subsection{Adaptive Training}
 
 For reasons of uniformity, Adobe's {\bf Times Roman} font should be
 used. In \LaTeX2e{} this is accomplished by putting
