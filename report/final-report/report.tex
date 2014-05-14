@@ -6,13 +6,14 @@
 %% Based on the style files for ACL-2013, which were, in turn,
 %% Based on the style files for ACL-2012, which were, in turn,
 \documentclass[10pt]{article}
-\usepackage{acl2014}
+\usepackage{report}
 \usepackage{times}
 \usepackage{url}
 \usepackage{latexsym}
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{comment}
+\usepackage{cite}
 
 %\setlength\titlebox{5cm}
 
@@ -22,7 +23,7 @@
 % in the camera-ready version and ask you to change it back.
 
 
-\title{Large-Scale Dataset Extraction by Semi-Supervised Learning}
+\title{Large-Scale Dataset Name Recognition by Semi-Supervised Learning}
 
 \author{Jinfeng Rao\\
   Department of Computer Science \\
@@ -42,8 +43,9 @@
 In this paper, we leverage linguistic tools to solve the problem of dataset extraction from scientific literatures. We attempted three different approaches for extracting dataset from texts: classifier, dependency tree and conditional random fields(CRF). We evaluated these three approaches on a real world dataset, and got F1-Measure score higher as 70\%. Based on these work, we purposed a novel framework to extend conditional random fields in semi-supervised learning way by given a set of seeds(labeled datasets) as start point, and then iteratively find new datasets and patterns to bootstrap the learning process. The experiment results show the F1-Measure score continues increasing as the bootstrap process repeats.  
 \end{abstract}
 \section{Introduction}
+Dataset selection is a fundamental problem when conducting research. Currently, most researchers tends to use some public benchmarks or datasets from related literatures to conduct experiments. However, in some fields with no existing benchmarks or publicly accessible datasets, researchers need to follow the dataset collection descriptions in related literatures to get the data, or sometimes difficult to obtain the exact datasets. These phenomena are rather common in realistic, leading to inconsistency of datasets in experiments and further resulting in performance incomparability of different work. Thus, a dataset platform, which permits researchers to search and download datasets, will simplify the problem of choosing and collecting appropriate datasets.    
 
-Under such a situation, several dataset repositories have been developed and made public to researchers. For example, the KEEL\footnote{http://sci2s.ugr.es/keel/datasets.php} dataset repository and the UCI Machine Learning Repository\footnote{http://archive.ics.uci.edu/ml/} provide access to several hundred datasets in machine learning domain. The datasets in these repositories are most collected and maintained by manual work. However, collecting and integrating dataset sources mutually from the vast number of data sources, e.g, literatures, web, P2P sensor, is impractical. A more realistic scenario is to start with a small set of seed items( in this case, labeled datasets) and iteratively grow it by finding contextual patterns that extracts the set of seeds from the texts, then identify a larger set of seeds through the contextual patterns, finally pick the best subset of candidate seeds and add to previous seeds. This iterative learning process is called bootstrap or semi-supervised learning. In this paper, we first attempted three different approaches for extracting dataset from texts: classifier, dependency tree and conditional random fields. Then we purposed a novel bootstrapping framework for conditional random fields to guide the iterative learning process.  \\
+Under such a situation, several dataset repositories have been developed and made public to researchers. For example, the KEEL\footnote{http://sci2s.ugr.es/keel/datasets.php} dataset repository and the UCI Machine Learning Repository\footnote{http://archive.ics.uci.edu/ml/} provide access to several hundred datasets in machine learning domain. The datasets in these repositories are most collected and maintained by manual work. However, collecting and integrating dataset sources mutually from the vast number of data sources, e.g, literatures, web, P2P sensor, is impractical. For constructing such platform automatically, \emph{dataset name recognition} is the first step to be solved. A more realistic scenario is to extract datasets from documents adaptively in a semi-supervised way by giving a set of labeled datasets as initial point. A standard way of semi-supervised learning is to start with a small set of seed items( in this case, labeled datasets) and iteratively grow it by finding contextual patterns that extracts the set of seeds from the texts, then identify a larger set of seeds through the contextual patterns, finally pick the best subset of candidate seeds and add to previous seeds. This iterative learning process is also called bootstrap learning. In this paper, we first attempted two different approaches for extracting dataset from texts: classifiers, conditional random fields \cite{lafferty2001conditional}. Both word-level features and contextual pattern features are employed. We used dependency tree to construct the contextual-level features for classifier methodologies. Then we purposed a novel bootstrapping framework for conditional random fields to guide the iterative learning process. This framework directs how to select a relatively better set of new seeds from all candidate seeds and how to adaptively train the CRF using intermediate statistics in the end of each iteration. \\
 
 In conclusion, our contributions includes,
 \begin{itemize}
@@ -51,12 +53,34 @@ In conclusion, our contributions includes,
 \item We purposed an original bootstrapping framework for conditional random fields, which includes an evaluation metric called \emph{feature contribution score} for measuring the contribution of this feature to find new contextual patterns, and an incremental training algorithm to avoid retraining of CRF in the iteratively learning process. 
 \end{itemize}
 
+\section{Problem Definition and Workflow}
+Given a corpus of research papers C, our objective is to find the dataset list $D = \{ d_1, d_2...d_n\}$ from the papers in the corpus. A paper usually contains multiply datasets, and we consider datasets with the same name in different papers as different instances. Consider a concrete example below: 
+\begin{itemize}
+\item The \textbf{DBLP} dataset contains 123k authors and 200k papers. 
+\item Five of the sets in this subsection are from the UCI repository \#REF\# ( \textbf{iris} , \textbf{wine} , \textbf{pendigits} , \textbf{waveform} , \textbf{segmentation} ).
+\end{itemize}
+The dataset names are in bold form. In the first example, it is relatively simple to identify the dataset \textbf{DBLP} by employing some heuristic rules (i.e, like a candidate dataset is followed by keyword 'dataset'). For the second example, however, there are not much apparent heuristic rules to recognize 
+the datasets. In these cases, an approach employing the contextual pattern information can be more efficient. In this section, we introduce our attempts of building classifier and structural prediction(CRF) to incorporate both word-level features and contextual pattern information. Before discussing the approaches, a brief introduction of preprocessing workflow is provided. 
+
+\noindent \textbf{Workflow.} \\
+The preprocessing workflow consists of following phases:
+\begin{enumerate}
+\item \textbf{Data Preparation.} Most research literatures are copyrighted, and we are not allowed to download too many articles from subscribed database (e.g. IEEE Xplore\footnote{http://ieeexplore.ieee.org/Xplore/home.jsp}, ACM Digital Library\footnote{http://dl.acm.org/}) in a short period of time via our university's library. We tried an alternative solution that used a Web crawler to dump articles from academic search engines such as Google Scholar\footnote{http://scholar.google.com/}.
+\item \textbf{File Format Conversion.} Working with pdf file directly makes difficult to parse, extract and analysis of contents. We convert the research papers in \emph{pdf} format to raw texts. It's worth noting some format information will lost in this phase, like \emph{italic} form. 
+\item \textbf{Content Positioning.} Dataset information are likely to appear in the experiment section. We reduce the contents to the paragraphs with occurrence of keywords 'dataset' or 'data set' in experiment section.
+\item \textbf{Preprocessing.} The contents are tokenized before processing. Some frequent patterns are replaced by a uniform representation, e.g, all references are replaced by word '\#REF\#', all numeric words are replaced by '\#NUMBER\#'. 
+\item \textbf{Candidate Generation.} We use some relaxed heuristic rules to generate candidate datasets in order not to miss any true datasets. A concrete example is to use following regular expression: \\
+\textit{(The $|$ the $|$ a $|$ an) .\{3,30\} (dataset $|$ data)} \\
+This regular expression extracts all words or phrases as candidates with length in [3,30], previous word is any keyword of \{\textit{The, the, a , an}\} and followed word is any keyword of \{\textit{dataset, data}\}. For each candidate, we extract the whole sentence containing the candidate word for contextual analysis.
+\item \textbf{Candidate Validation.} The key question of data extraction problem is how to recognize the true datasets from a set of candidates accurately. In the validation phase, we use two different approaches (classifier, CRF) to predict whether a candidate is dataset or not. Both word-level features and contextual patterns are considered for building classifier and CRF approach.  
+\end{enumerate}
+
 \section{Related Work}
-In this section, we first introduce some background knowledge in dependency tree and conditional random fields, then we discuss current work in the problem of dataset extraction.
+In this section, we first introduce some background knowledge in dependency tree and conditional random fields, then we discuss current work in the problem of dataset extraction. If you has already had knowledge about the dependency tree and conditional random fields, you can safely skip to section 3.3 for related work review.
 \subsection{Dependency Tree}
 
 \subsection{Conditional Random Fields}
-Conditional Random Fields [] are probabilistic graph model assuming conditional probability $P(S|O)$ over designated output nodes $S$ given observed input node $O$. Unlike other approaches use the joint probability model $P(O,S)$, e.g, Hidden Markov Model [], the conditional nature of CRF results in the relaxation of the independence assumptions which is required by HMMs to obtain tractable inferences. More specifically, CRF can be viewed as a first-order markov chain globally conditioned on input nodes $O$. Each output state $S_i$ is viewed as a node in the graph model, which is conditioned on previous output node $S_{i-1}$ and input nodes $X$. \\
+Conditional Random Fields \cite{lafferty2001conditional} are probabilistic graph model assuming conditional probability $P(S|O)$ over designated output nodes $S$ given observed input node $O$. Unlike other approaches use the joint probability model $P(O,S)$, e.g, Hidden Markov Model \cite{eddy1996hidden}, the conditional nature of CRF results in the relaxation of the independence assumptions which is required by HMMs to obtain tractable inferences. More specifically, CRF can be viewed as a first-order markov chain globally conditioned on input nodes $O$. Each output state $S_i$ is viewed as a node in the graph model, which is conditioned on previous output node $S_{i-1}$ and input nodes $X$. \\
 
 Let $o =\{o_1, o_2 ... o_n \}$ be the set of observed input data sequence, like a sequences of lines in the document. Let $S$ be the set of predicted states, each of which corresponds to a label (i.e, DATASET). Let $s = \{ s_1, s_2 ... s_n\}$ be some set of state sequence with any $s_i \in S$. CRF defines conditional probability of predicted state sequence given an input sequence as: 
 
@@ -98,33 +122,13 @@ where the second sum is the Gaussian priors over the set of weights $\{ \lambda_
 							& \left( \sum_j \sum_s P(s|o^j) F_k(s, o^j)\right) - \frac{\lambda_k}{\sigma^2} 
 \end{align*}
 \subsection{Current Work}
-Dataset extraction can be generalized to a Named Entity Recognition(NER) problem. There exists a variety of methods, e.g, Hidden Markov Model, CRF and classifier-based approaches, which is further classified to several categories: supervised, unsupervised, semi-supervised. Despite the existing variety of approaches for Named Entity Recognition problems, the inherent diversity nature of a specified problem and the noisy contexts often make existing approaches inapplicable to other similar problems. To the best of our knowledge, we find very limited work in solving dataset extraction problem. [] employs conditional random fields to extract paper metadata, e.g, paper header, title and author information from research papers, while they didn't look into the dataset extraction problem. [] utilizes search engine API to calculate the similarity score between candidate dataset name and keyword 'dataset', thus to identify a possible set of dataset names. This work doesn't leverage linguistic tools to track the dataset extraction problem, and its experiments are based on a very small set of documents, thus we leave out the comparison with this work. 
+Dataset name recognition can be generalized to a Named Entity Recognition(NER) problem. There exists a variety of methods \cite{eddy1996hidden,lafferty2001conditional, tjong2003introduction, cortes1995support, florian2003named, peng2006information, pinto2003table} in this field, e.g, Hidden Markov Model \cite{eddy1996hidden}, Conditional Random Fields \cite{lafferty2001conditional} and Support Vector Machines \cite{cortes1995support}. The CoNLL-2003 shared task \cite{tjong2003introduction} use a variety of machine learning techniques(e.g, Maximum Entropy) to extract four types language-independent named entities(locations, persons, organizations and names of miscellaneous entities). \cite{florian2003named} presents a classifier-combination framework incorporating four diverse classifiers(robust linear classifier, maximum entropy classifier, transformation-based learning and hidden Markov model) to extract named entities from texts. A similar work to us is in\cite{peng2006information}, which employs conditional random fields to extract paper metadata, e.g, paper header, title and author information from research papers, while this work doesn't look into the problem of dataset extraction. Another interesting usage of conditional random fields is to recognize and extract the table structure from raw documents \cite{pinto2003table}.  
 
-\section{Purposed Approaches}
-Given a corpus of research papers C, our objective is to find the dataset list $D = \{ d_1, d_2...d_n\}$ from the papers in the corpus. A paper usually contains multiply datasets, and we consider datasets with the same name in different papers as different instances. Consider a concrete example below: 
-\begin{itemize}
-\item The \textbf{DBLP} dataset contains 123k authors and 200k papers. 
-\item Five of the sets in this subsection are from the UCI repository \#REF\# ( \textbf{iris} , \textbf{wine} , \textbf{pendigits} , \textbf{waveform} , \textbf{segmentation} ).
-\end{itemize}
-The dataset names are in bold form. In the first example, it is relatively simple to identify the dataset \textbf{DBLP} by employing some heuristic rules (i.e, like a candidate dataset is followed by keyword 'dataset'). For the second example, however, there are not much apparent heuristic rules to recognize 
-the datasets. In these cases, an approach employing the contextual pattern information can be more efficient. In this section, we introduce our attempts of building classifier and structural prediction(CRF) to incorporate both word-level features and contextual pattern information. Before discussing the approaches, a brief introduction of preprocessing workflow is provided. 
+Despite the existing variety of approaches for Named Entity Recognition problems, the inherent diversity nature and the noisy contexts of a specified problem make existing approaches often inapplicable to other similar problems. To the best of our knowledge, we find very limited work in solving named dataset recognition problem. The only work \cite{singhaldata} utilizes search engine API to calculate the similarity score between candidate dataset name and keyword 'dataset', thus to identify a possible set of dataset names. This work doesn't leverage linguistic tools to track the dataset extraction problem, and its experiments are based on a very small set of documents, thus we leave out the comparison with this work. 
 
-\subsection{Workflow}
-The preprocessing workflow consists of following phases:
-\begin{enumerate}
-\item \textbf{Data Preparation.} Most research literatures are copyrighted, and we are not allowed to download too many articles from subscribed database (e.g. IEEE Xplore\footnote{http://ieeexplore.ieee.org/Xplore/home.jsp}, ACM Digital Library\footnote{http://dl.acm.org/}) in a short period of time via our university's library. We tried an alternative solution that used a Web crawler to dump articles from academic search engines such as Google Scholar\footnote{http://scholar.google.com/}.
-\item \textbf{File Format Conversion.} Working with pdf file directly makes difficult to parse, extract and analysis of contents. We convert the research papers in \emph{pdf} format to raw texts. It's worth noting some format information will lost in this phase, like \emph{italic} form. 
-\item \textbf{Content Positioning.} Dataset information are likely to appear in the experiment section. We reduce the contents to the paragraphs with occurrence of keywords 'dataset' or 'data set' in experiment section.
-\item \textbf{Preprocessing.} The contents are tokenized before processing. Some frequent patterns are replaced by a uniform representation, e.g, all references are replaced by word '\#REF\#', all numeric words are replaced by '\#NUMBER\#'. 
-\item \textbf{Candidate Generation.} We use some relaxed heuristic rules to generate candidate datasets in order not to miss any true datasets. A concrete example is to use following regular expression: \\
-\textit{(The $|$ the $|$ a $|$ an) .\{3,30\} (dataset $|$ data)} \\
-This regular expression extracts all words or phrases as candidates with length in [3,30], previous word is any keyword of \{\textit{The, the, a , an}\} and followed word is any keyword of \{\textit{dataset, data}\}. For each candidate, we extract the whole sentence containing the candidate word for contextual analysis.
-\item \textbf{Candidate Validation.} In the validation phase, we use two different approaches (classifier, CRF) to predict whether a candidate is dataset or not. Both word-level features and contextual patterns are considered for classifier and CRF approach.  
-\end{enumerate}
-
+\section{Purposed Approaches} 
+In this section, we presented how to use classifiers and conditional random fields for the DNR(dataset name recognition) problem. For classifier, we builds word-level features via some heuristic rules and contextual pattern features through dependency tree. 
 \subsection{Classifier Feature Space}
-For the classifier, we use two kinds of features: heuristic features and contextual features generated by dependency tree. 
-
 \subsubsection{Heuristic Features}
 
 \noindent \textbf{Capital}: Candidate consists of all capital letters or the first letter is capitalized. \\
@@ -201,6 +205,7 @@ Substituting these expressions into Equation () yields an adaptive training meth
 \section{Results and Discussions}
 \subsection{Experiment Settings}
 \textbf{Dataset.} We crawled all papers published at KDD\footnote{http://www.kdd.org/conferences} conference from year 2000 to 2012 via UMD library account. This dataset consisting of approximately 2000 academic papers is partitioned into 13 chunks by year. Chunks are iterative used as testing data in the reverse chronological order, thus from 2012 to 2000. We manually labeled datasets in the KDD 2012 papers as seeds to start the semi-supervised learning process. In each iteration, we use the previously trained chunks as training data, and a new chunk as testing data. Due to the huge efforts of munually labeling datasets to calculate evaluation metrics(i.e, precision), at current stage, we only use KDD 2011 and 2012 papers as experimental datasets. The papers in source \emph{pdf} format are converted into raw texts, tokenized and preprocessed as described in Section 3.1. \\
+\textbf{Implementation.} We used CRF++ (version 0.058)\footnote{http://crfpp.googlecode.com/}, a customizable implementation of CRFs for segmentation/labeling of sequential data, and set maximum iteration to 1000 in our experiments. \\
 \textbf{Evalution Metric.} F1-Score is used to measure the performance of our model. 
 \[
 	\text{F1-Score} = \frac{2 \cdot \text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
@@ -217,16 +222,16 @@ From the table, we can see the CRF model achieves an overall F1 measure of 64.9\
 \vspace{0pt}
 \begin{tabular}{|c @{\hskip 0.02in}| c c c @{\hskip 0.1in}| c c c @{\hskip 0.1in}| c |} % centered columns (4 columns) 
 	\hline %inserts double horizontal lines 
-	 & \multicolumn{3}{c|}{Classifier+Heuristic Features} & \multicolumn{3}{c|}{Classifier+Contextual Features} & \multicolumn{1}{c|}{CRF} \\
+	 & \multicolumn{3}{c|}{Heuristic Features} & \multicolumn{3}{c|}{Contextual Features} & \multicolumn{1}{c|}{CRF} \\
 	\hline
-	 Metric & Naive Bayes & SVM & DT & Naive Bayes & SVM & DT & CRF  \\ [0.2ex] % inserts table 
+	 Metric & NB & SVM & DT & NB & SVM & DT & CRF  \\ [0.2ex] % inserts table 
 	%heading 
 	\hline \hline
-	Accuracy & 79\% & 58.2\% & 52.7\% & xx & xx & xx & \textbf{78.8\%} \\
+	Accuracy & 79\% & 58.2\% & 52.7\% & xx & xx & xx & \textbf{63.4\%} \\
 	\hline
-	 Recall & 20.1\% & 27.1\% & 13.3\% & xx & xx & xx & \textbf{55.3\%} \\
+	 Recall & 20.1\% & 27.1\% & 13.3\% & xx & xx & xx & \textbf{45.1\%} \\
 	\hline
-	F1-Score & 31.9\% & 36.8\% & 20.8\% & xx & xx & xx & \textbf{64.9\%} \\
+	F1-Score & 31.9\% & 36.8\% & 20.8\% & xx & xx & xx & \textbf{52.8\%} \\
 	\hline %inserts single line 
 	\end{tabular} 
 	\caption{Performance Comparisons}
@@ -240,65 +245,36 @@ From the table, we can see the CRF model achieves an overall F1 measure of 64.9\
 \vspace{0pt}
 \begin{tabular}{|c @{\hskip 0.02in}| c | c | c |} % centered columns (4 columns) 
 	\hline %inserts double horizontal lines 
+	  & \multicolumn{3}{c|}{Confidence Score Metric} \\
+	\hline %inserts double horizontal lines 
 	 Iteration & Precision & Recall & F1-Score  \\ [0.2ex] % inserts table 
 	%heading 
 	\hline \hline
-	Iteration 1 & xx & xx & xx  \\
+	Iteration 1 & 63.4\% & 45.1\%  & 52.8\%  \\
 	\hline
-	 Iteration 2 & xx & xx & xx  \\
+	 Iteration 2 & 87.9\% & 63.6\% & 73.8\%  \\
 	\hline
-	Iteration 3 & xx & xx & xx  \\
+	Iteration 3 & 87.6\% &  52.8\% & 65.9\%  \\
 	\hline
-	Iteration 4 & xx & xx & xx  \\
+	Iteration 4 & 89.2\% & 54.7\% & 67.8\%  \\
 	\hline
-	Iteration 5 & xx & xx & xx  \\
+	Iteration 5 & 91.0\% & 55.0\% & 68.6\%  \\
 	\hline
-	Iteration 6 & xx & xx & xx  \\
-	\hline
-	Iteration 7 & xx & xx & xx  \\
-	\hline %inserts single line 
 	\end{tabular} 
 	\caption{CRF Bootstrap Learning Results}
 	\label{table:bootstrap} % is used to refer this table in the text 
 \end{table} 
 
 \subsection{CRF Bootstrap Learning Results}
-The CRF bootstrap learning results are shown in Table 2.
+In this experiment, we measure the performance of our bootstrapping method and its evolution in each iterations. We used the KDD paper dataset varying from year 2008 to 2012. The papers published in year 2012 are manually labeled and used as seeds to start the bootstrapping process, other papers grouped by a year correspond to the dataset used in one iteration. In the end of each iteration, we selected the predicted datasets with top-50 probability score(\emph{confidence metric}) as new seeds adding into previous seeds. We calculated the precision and recall of the inferred bootstrapping CRF model for each iteration over a random sample of 50 papers for each year and mutually annotated datasets in these papers. The bootstrapping learning results are shown in Table 2. 
+
+As we can see, the initial iteration obtains a F-score to 52.8\% with precision of 63.4\% and recall of 45.1\%. The bootstrapping learning system consistently increase the F1-score measure of the DNR(Dataset Name Recognition) system along the iterations and finally maintain in a relatively stable level (65\%). Another interesting observation is that as the number of iteration grows, precision increases in a relatively fast speed while recall don't improve much. On the one hand, this trend claims that the DNR system is prone to mislabel a word as a dataset (false positive) at the beginning, while the number of false positives decrease as the iteration grows. This matches the mechanism behind CRF that with more features and patterns available, the inferred CRF model is less likely to falsely predict words as datasets. On the other hands, the relatively low recall score comes from many datasets appear with irregular patterns, e.g, not in capitalize form or a irregular contextual structure. Another reason for the low recall is that some datasets are described in a table structure while not appearing in the contents, of course our CRF model aiming at analyzing the raw contents will miss such datasets.
+
+Currently, we have only implemented the bootstrapping CRF model based on the confidence score in new seed selection phase. In next step, we plan to use \emph{Pattern Contribution Score} as new seed selection criteria or trying to find a hybrid way integrating these two metrics.
 
 \section{Conclusion}
-In this paper, we leverage linguistic tools to solve the problem of dataset extraction from scientific literatures. We attempted three different approaches for extracting dataset from texts: classifier, dependency tree and conditional random fields(CRF). We evaluated these three approaches on the KDD dataset, and got F1-Measure score higher as 65\%. Based on these work, we purposed a novel algorithm to guide conditional random fields to learning in a bootstrapping process. The results shows the F1-score continues to increase and finally come to a convergence as the bootstrapping repeats.
-\begin{thebibliography}{}
+In this paper, we leverage linguistic tools to solve the problem of dataset extraction from scientific literatures. We attempted three different approaches for extracting dataset from texts: classifier, dependency tree and conditional random fields(CRF). We evaluated these three approaches on the KDD dataset, and got F1-Measure score higher as 70\%. Based on these work, we purposed a novel algorithm to guide conditional random fields to learning in a bootstrapping process. The results shows the F1-score continues to increase and finally come to a convergence as the bootstrapping repeats.
 
-\bibitem[\protect\citename{Aho and Ullman}1972]{Aho:72}
-Alfred~V. Aho and Jeffrey~D. Ullman.
-\newblock 1972.
-\newblock {\em The Theory of Parsing, Translation and Compiling}, volume~1.
-\newblock Prentice-{Hall}, Englewood Cliffs, NJ.
-
-\bibitem[\protect\citename{{American Psychological Association}}1983]{APA:83}
-{American Psychological Association}.
-\newblock 1983.
-\newblock {\em Publications Manual}.
-\newblock American Psychological Association, Washington, DC.
-
-\bibitem[\protect\citename{{Association for Computing Machinery}}1983]{ACM:83}
-{Association for Computing Machinery}.
-\newblock 1983.
-\newblock {\em Computing Reviews}, 24(11):503--512.
-
-\bibitem[\protect\citename{Chandra \bgroup et al.\egroup }1981]{Chandra:81}
-Ashok~K. Chandra, Dexter~C. Kozen, and Larry~J. Stockmeyer.
-\newblock 1981.
-\newblock Alternation.
-\newblock {\em Journal of the Association for Computing Machinery},
-  28(1):114--133.
-
-\bibitem[\protect\citename{Gusfield}1997]{Gusfield:97}
-Dan Gusfield.
-\newblock 1997.
-\newblock {\em Algorithms on Strings, Trees and Sequences}.
-\newblock Cambridge University Press, Cambridge, UK.
-
-\end{thebibliography}
-
+\bibliographystyle{abbrv}
+\bibliography{report}
 \end{document}
