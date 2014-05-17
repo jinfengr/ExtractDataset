@@ -101,6 +101,10 @@ class MyTokenizer(TokenizerI):
         # cite([1]) --> #REF#
         text = re.sub(r"\[ \d+( ,  \d+)* \]", "#REF#", text)
         
+        text = re.sub(r' [-0-9][0-9,.]* ', " #NUM# ", text)
+        text = re.sub(r' [-0-9][0-9,.]* ', " #NUM# ", text)
+        text = re.sub(r'\( [a-g] \)', "#ITEMLIST#", text)
+        
         tokens = text.split()
         upper = -1
         for i in range(len(tokens)):

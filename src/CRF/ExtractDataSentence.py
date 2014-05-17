@@ -6,7 +6,7 @@ Created on Apr 29, 2014
 import re,os
 import BuildWordFeatures;
 
-data_dir = '../../data/training_data/'
+data_dir = '../../data/KDD11/'
 dataset_list = BuildWordFeatures.LoadDataset(data_dir)
 dataset_sentence = {}
 
@@ -15,6 +15,8 @@ for f in files:
     if f.endswith('_dataset.txt'):
         file_name = f.split('_')[0]
         infp = open(data_dir+f,'rb')
+        if not dataset_list.has_key(file_name):
+            continue
         datasets = dataset_list[file_name]
         dataset_sentence[file_name] = []
         for para in infp:
@@ -26,6 +28,8 @@ for f in files:
 f = open(data_dir+'sentences.dat','w')
 for file in dataset_sentence:
     for sentence in dataset_sentence[file]:
-        f.write(file+'@'+sentence.rstrip('\n')+' .\n')
+        length = len(sentence.split(' '))
+        if length > 5:
+            f.write(file+'@'+sentence.rstrip('\n')+' .\n')
 f.close()
         

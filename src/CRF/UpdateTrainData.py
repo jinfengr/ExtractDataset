@@ -15,10 +15,8 @@ def NormalizeInstance(instance):
         tags = lines[i].split('\t')
         lines[i] = ''
         for index in range(len(tags)):
-            if index == COLUMN -2:
+            if index == COLUMN -1:
                 continue
-            elif index == COLUMN -1:
-                lines[i] += tags[COLUMN-1].split('/')[0]
             else:
                 lines[i] += tags[index]+' '
     newinstance = ''
@@ -29,7 +27,7 @@ def NormalizeInstance(instance):
 
 data_dir = '../../data/training_data/'
 predict_file = open(data_dir+'CRF_predict.dat')
-COLUMN = 9
+COLUMN = 10
 Percentage = 0.5
 
 prob_exp = re.compile('# [0-9.]+\n')

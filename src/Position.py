@@ -39,11 +39,12 @@ def FindDataset(line):
 def ExtractFigure(line):
     regexp = 'figure|Figure|table|Table'
     pattern = re.compile(regexp)
-    if pattern.search(line):
+    pattern2 = re.compile('\( [a-f] \)')
+    if pattern.search(line) or pattern2.search(line):
         return True
     return False
 
-paper_dir = '../data/training_data/'
+paper_dir = '../data/KDD11/'
 files = os.listdir(paper_dir)
 for f in files:
     if f.endswith('_refined.txt'):

@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 import os
 import nltk
 
@@ -41,6 +43,8 @@ def refineText(infp, outfp):
             if current != size and size != "":
                 for sentence in nltk.sent_tokenize(''.join(stringlist)):
                     for token in MyTokenizer().tokenize(sentence):
+                        token = token.replace("“", "")
+                        token = token.replace("”", "")
                         outfp.write(token+" ")
                 outfp.write('\n')
                 stringlist = []
@@ -55,10 +59,12 @@ def refineText(infp, outfp):
             textline = current+' '
     for sentence in nltk.sent_tokenize(''.join(stringlist)):
         for token in MyTokenizer().tokenize(sentence):
+            token = token.replace("“", "")
+            token = token.replace("”", "")
             outfp.write(token+" ")
     outfp.write('\n')
 
-paper_dir = '../data/training_data/'
+paper_dir = '../data/KDD11/'
 
 #f = "KDD1.pdf"
 #infp = open(paper_dir+f,'rb')
@@ -66,7 +72,7 @@ paper_dir = '../data/training_data/'
 #extractText(infp, outfp)
 #outfp.close()
 #infp.close()
-#f = "KDD1.txt"
+#f = "KDD133.txt"
 #infp = open(paper_dir+f,'rb')
 #outfp = file(paper_dir+f.replace('.txt','_refined.txt'), 'w')
 #refineText(infp, outfp)
@@ -88,7 +94,7 @@ for f in files:
 
 files = os.listdir(paper_dir)
 for f in files:
-    if f.endswith('.txt') and not f.endswith('_refined.txt') and not f.endswith('_dataset.txt'):
+    if f.endswith('.txt') and not f.endswith('_refined.txt') and not f.endswith('_dataset.txt') and not f.endswith('_figure.txt'):
         infp = open(paper_dir+f,'rb')
         outfp = file(paper_dir+f.replace('.txt','_refined.txt'), 'w')
         print 'Refining ' + f + '...'
